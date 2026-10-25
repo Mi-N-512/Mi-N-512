@@ -2,7 +2,7 @@
 
 ### About me
 
-I enjoy turning an idea into something I can use. I care about clear interfaces and understanding what happens behind them.
+I enjoy turning an idea into something I can use. I care about clear code and actions and understanding what happens behind them.
 
 This is where I share what I'm working on and what I'm learning.
 
