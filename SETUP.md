@@ -20,6 +20,8 @@ cloc 2.10 counts nonblank, noncomment source lines on default branches. The upda
 
 Repositories whose downloaded archive exceeds 100 MiB or whose expanded contents exceed 500 MiB are excluded from line counts. The expandable language section reports how many were excluded. Their project cards can still appear. Symbolic links are ignored. Smaller tiles may show an ellipsis; the complete language table remains available underneath.
 
+The language chart excludes configuration and project metadata such as Properties, Visual Studio Solution, MSBuild, Gradle, Ant, Maven and TOML, as well as cloc's C# Generated category. `exclude_languages` contains the complete list.
+
 Owned, nonarchived, nonfork repositories are included. The profile repository itself is excluded. The three latest projects are ranked by `pushed_at`. The activity chart counts commits attributed to this GitHub account on the default branches of included public repositories over 28 UTC days; it will differ from GitHub's contribution calendar.
 
 ## Local checks

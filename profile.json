@@ -8,5 +8,5 @@
   "include_private_languages": true,
   "exclude_repositories": [],
   "exclude_directories": ["node_modules", "vendor", "dist", "build", "target", "coverage", "generated", ".venv", "venv", "__pycache__", ".next", "bin", "obj"],
-  "exclude_languages": ["JSON", "YAML", "XML", "Markdown", "Text", "SVG", "CSV"]
+  "exclude_languages": ["JSON", "YAML", "XML", "Markdown", "Text", "SVG", "CSV", "Properties", "Visual Studio Solution", "MSBuild script", "Gradle", "Ant", "Maven", "TOML", "C# Generated"]
 }
