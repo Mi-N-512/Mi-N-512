@@ -1,0 +1,12 @@
+{
+  "username": "Mi-N-512",
+  "name": "Miché N",
+  "tagline": "I like figuring out how things work.",
+  "intro": "I build software and learn by trying things out.",
+  "about": "I enjoy turning an idea into something I can use. I care about clear interfaces and understanding what happens behind them.",
+  "note": "This is where I share what I'm working on and what I'm learning.",
+  "include_private_languages": true,
+  "exclude_repositories": [],
+  "exclude_directories": ["node_modules", "vendor", "dist", "build", "target", "coverage", "generated", ".venv", "venv", "__pycache__", ".next", "bin", "obj"],
+  "exclude_languages": ["JSON", "YAML", "XML", "Markdown", "Text", "SVG", "CSV"]
+}
