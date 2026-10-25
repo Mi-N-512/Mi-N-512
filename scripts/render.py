@@ -93,7 +93,7 @@ def project_svg(project, index):
         description = textwrap.shorten(project['description'], width=105, placeholder='…')
         body += text(24, 104, description, 14, MUTED)
         body += text(24, 137, 'Open repository ↗', 12, GREEN, True)
-    return svg('Private project, name withheld' if project['private'] else project['name'], body, 160)
+    return svg('Private project, name withheld' if project['private'] else project['name'], body, 176)
 
 
 def render(config, data, output):
