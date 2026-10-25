@@ -15,28 +15,20 @@ This is where I share what I'm working on and what I'm learning.
 
 | Language | Source lines | Share |
 | :--- | ---: | ---: |
-| C# | 19,191 | 24.2% |
-| Kotlin | 15,138 | 19.1% |
-| Java | 12,984 | 16.4% |
-| Properties | 11,819 | 14.9% |
-| JavaScript | 5,715 | 7.2% |
-| Razor | 5,067 | 6.4% |
-| Bourne Shell | 1,491 | 1.9% |
-| Visual Studio Solution | 1,441 | 1.8% |
-| CSS | 1,093 | 1.4% |
-| MSBuild script | 1,001 | 1.3% |
-| Gradle | 887 | 1.1% |
-| Ant | 860 | 1.1% |
-| DOS Batch | 797 | 1.0% |
-| Maven | 336 | 0.4% |
-| TOML | 314 | 0.4% |
-| TeX | 220 | 0.3% |
+| C# | 19,191 | 30.7% |
+| Kotlin | 15,138 | 24.2% |
+| Java | 12,984 | 20.8% |
+| JavaScript | 5,715 | 9.2% |
+| Razor | 5,067 | 8.1% |
+| Bourne Shell | 1,491 | 2.4% |
+| CSS | 1,093 | 1.8% |
+| DOS Batch | 797 | 1.3% |
+| TeX | 220 | 0.4% |
 | XAML | 204 | 0.3% |
-| Ruby | 115 | 0.1% |
-| Fortran 77 | 96 | 0.1% |
+| Ruby | 115 | 0.2% |
+| Fortran 77 | 96 | 0.2% |
 | Prolog | 89 | 0.1% |
 | Python | 72 | 0.1% |
-| C# Generated | 56 | 0.1% |
 | awk | 53 | 0.1% |
 | HTML | 50 | 0.1% |
 | SQL | 28 | 0.0% |
@@ -98,4 +90,4 @@ Commits attributed to this GitHub account on the default branches of included pu
 
 </details>
 
-<sub>Last updated: 2026-10-25 13:12 UTC · [@Mi-N-512](https://github.com/Mi-N-512)</sub>
+<sub>Last updated: 2026-10-25 13:15 UTC · [@Mi-N-512](https://github.com/Mi-N-512)</sub>
