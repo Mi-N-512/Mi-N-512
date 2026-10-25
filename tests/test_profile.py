@@ -1,5 +1,6 @@
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -9,10 +10,19 @@ import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
 from render import render, safe_projects, treemap, language_svg
-from update_profile import eligible, extract_sources
+from update_profile import count_lines, extract_sources
 
 
 class ProfileTests(unittest.TestCase):
+    @unittest.skipUnless(os.environ.get('CLOC'), 'Set CLOC to run the real line-counter integration check')
+    def test_real_counter_excludes_comments_and_dependencies(self):
+        raw = io.BytesIO()
+        with zipfile.ZipFile(raw, 'w') as archive:
+            archive.writestr('repo/main.py', '# comment\nx = 1\n\ny = 2\n')
+            archive.writestr('repo/node_modules/vendor.py', 'z = 3\n')
+        config = json.loads((Path(__file__).resolve().parents[1]/'profile.json').read_text())
+        self.assertEqual(count_lines(raw.getvalue(), config), {'Python': 2})
+
     def test_private_metadata_never_published(self):
         secret = 'SECRET-REPO-NAME-123'
         repo = {'private': True, 'name': secret, 'description': secret, 'html_url': 'https://github.com/'+secret, 'pushed_at': '2026-10-25'}

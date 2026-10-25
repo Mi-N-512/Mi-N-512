@@ -1,6 +1,5 @@
 """Render only sanitized data into GitHub-compatible SVG and Markdown."""
 import html
-import math
 import textwrap
 from pathlib import Path
 
@@ -57,6 +56,9 @@ def language_svg(languages):
     for i, ((name, count), x, y, w, h) in enumerate(treemap(shown)):
         body += rect(x+3, y+3, w-6, h-6, colors[i % len(colors)])
         color = '#ffffff' if i == 0 else INK
+        if w < 100 or h < 95:
+            body += f'<g><title>{esc(name)}: {count:,} lines</title>' + text(x+8, y+h/2, '…', 14, color) + '</g>'
+            continue
         size = min(38, max(12, (w-30) / max(len(name)*.61, 1)), max(12, h/5))
         body += text(x+16, y+30+size/2, name, round(size), color)
         body += text(x+16, y+h-44, f'{count/total:.1%}', 20, '#a9d7b5' if i == 0 else GREEN)

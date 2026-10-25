@@ -1,0 +1,54 @@
+name: Refresh profile
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *'
+  push:
+    branches: [main]
+    paths:
+      - profile.json
+      - scripts/**
+      - tests/**
+      - .github/workflows/profile.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profile-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install verified line counter
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --location https://github.com/AlDanial/cloc/releases/download/v2.10/cloc-2.10.pl -o "$RUNNER_TEMP/cloc"
+          echo "bf59272455172108072a0a106379f7509fd4349bdcfd85203bac038ccd286d83  $RUNNER_TEMP/cloc" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/cloc"
+          echo "CLOC=$RUNNER_TEMP/cloc" >> "$GITHUB_ENV"
+      - name: Test privacy and rendering
+        run: python -m unittest discover -s tests -v
+      - name: Generate profile
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROFILE_READ_TOKEN: ${{ secrets.PROFILE_READ_TOKEN }}
+        run: python scripts/update_profile.py
+      - name: Publish generated files
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md assets/
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: refresh profile'
+            git push
+          fi

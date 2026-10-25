@@ -66,7 +66,9 @@ def extract_sources(raw, destination, excluded):
                 continue
             if '..' in parts or '\\' in info.filename or any(':' in part for part in parts):
                 raise ValueError('Unsafe source path')
-            if info.filename.startswith('/') or (info.external_attr >> 16) & 0o170000 == 0o120000:
+            if (info.external_attr >> 16) & 0o170000 == 0o120000:
+                continue
+            if info.filename.startswith('/'):
                 raise ValueError('Unsafe source entry')
             if any(part in excluded for part in parts[1:-1]):
                 continue
@@ -91,9 +93,9 @@ def count_lines(raw, config):
         command = [os.environ.get('CLOC', 'cloc')]
         if os.environ.get('CLOC_PERL'):
             command.insert(0, os.environ['CLOC_PERL'])
-        subprocess.run(command + [str(source), '--json', '--quiet', '--skip-archive=.*',
+        subprocess.run(command + [source.as_posix(), '--json', '--quiet', '--skip-archive=\\.(zip|tar|gz|bz2|xz|7z|jar|war)$',
                                   '--exclude-lang=' + ','.join(config['exclude_languages']),
-                                  '--out=' + str(report)], check=True, capture_output=True, timeout=180)
+                                  '--out=' + report.as_posix()], check=True, capture_output=True, timeout=180)
         if not report.exists():
             return {}
         counts = json.loads(report.read_text(encoding='utf-8'))
@@ -113,27 +115,40 @@ def collect(config):
     def inspect(repo):
         lines = {}
         commits = collections.Counter()
+        skipped = 0
         # Identifiers remain in memory only. No source code from a repository is executed.
         path = '/repos/' + '/'.join(urllib.parse.quote(s, safe='') for s in (config['username'], repo['name']))
         if repo.get('size', 0) and (not repo['private'] or config['include_private_languages']):
-            raw = request(path + '/zipball/' + urllib.parse.quote(repo['default_branch'], safe=''), token, binary=True)
-            lines = count_lines(raw, config)
+            try:
+                raw = request(path + '/zipball/' + urllib.parse.quote(repo['default_branch'], safe=''), token, binary=True)
+                lines = count_lines(raw, config)
+            except ValueError as error:
+                if str(error) not in {'Response too large', 'Source size limit exceeded'}:
+                    raise
+                skipped = 1
         if not repo['private'] and repo.get('size', 0):
             query = urllib.parse.urlencode({'author': config['username'], 'since': dates[0]+'T00:00:00Z', 'until': today.isoformat()+'T23:59:59Z'})
             for commit in pages(path + '/commits?' + query, token):
                 day = commit['commit']['committer']['date'][:10]
                 if day in activity:
                     commits[day] += 1
-        return lines, commits
+        return lines, commits, skipped
+    skipped_total = 0
     with ThreadPoolExecutor(max_workers=4) as pool:
-        for lines, commits in pool.map(inspect, repositories):
+        for index, (lines, commits, skipped) in enumerate(pool.map(inspect, repositories), 1):
             totals.update(lines)
             activity.update(commits)
+            skipped_total += skipped
+            if index % 25 == 0:
+                print(f'Processed {index} repositories.', flush=True)
     private_scope = bool(private_token and config['include_private_languages'])
+    coverage = 'Includes accessible private repositories in aggregate.' if private_scope else 'Public repositories only.'
+    if skipped_total:
+        coverage += f' {skipped_total} oversized repositories excluded from line counts (100 MiB archive / 500 MiB expanded limit).'
     return {'languages': dict(totals), 'repositories': repositories,
             'activity': [{'date': day, 'count': activity[day]} for day in dates],
             'updated': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
-            'coverage': 'Includes accessible private repositories in aggregate.' if private_scope else 'Public repositories only.'}
+            'coverage': coverage}
 
 
 def main():
@@ -155,7 +170,11 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except Exception:
+    except Exception as error:
         # Avoid URLs, credentials, private repository names and source paths in public Actions logs.
-        print('Profile refresh failed; existing published assets were retained. Check token access, API limits and cloc availability.', file=sys.stderr)
+        code = f'HTTP {error.code}' if isinstance(error, urllib.error.HTTPError) else type(error).__name__
+        safe_errors = {'Response too large', 'Source size limit exceeded', 'Unsafe source path', 'Unsafe source entry', 'Unsafe source destination', 'Pagination limit reached', 'Expected paginated list'}
+        if str(error) in safe_errors:
+            code += ': ' + str(error)
+        print(f'Profile refresh failed ({code}); existing published assets were retained. Check token access, API limits and cloc availability.', file=sys.stderr)
         sys.exit(1)
