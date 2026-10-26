@@ -1,28 +1,109 @@
-"""Render only sanitized data into GitHub-compatible SVG and Markdown."""
+"""Render only sanitized data into GitHub-compatible SVG and Markdown.
+
+Each README section is one full-width SVG. Light and dark sets are written to
+assets/ and assets/dark/; the README swaps them with <picture> so the image
+background always matches GitHub's page and the sections read as one page.
+"""
+import base64
 import html
+import json
 import textwrap
 from pathlib import Path
 
-INK, GREEN, MUTED = '#181818', '#226b42', '#626262'
+W, PAD = 904, 40
+CW = W - 2 * PAD
+FONTS = Path(__file__).resolve().parents[1] / 'fonts'
+METRICS = json.loads((FONTS / 'metrics.json').read_text(encoding='utf-8'))
+
+LIGHT = {
+    'bg': '#ffffff', 'ink': '#181818', 'muted': '#626262', 'faint': '#8a8f8a', 'green': '#226b42',
+    'card': '#f7f8f5', 'rule': '#e3e5e0', 'redact': '#181818', 'redact_line': '#535b54', 'empty': '#dce5dd',
+    'tiles': ['#181818', '#dceade', '#eff4ef', '#c8dbcc', '#e5e5df', '#f1f1ee', '#d3dfd5'],
+    'first_text': '#ffffff', 'first_pct': '#a9d7b5',
+}
+DARK = {
+    'bg': '#0d1117', 'ink': '#e6edf3', 'muted': '#9198a1', 'faint': '#6e7681', 'green': '#6cc488',
+    'card': '#151b23', 'rule': '#262c36', 'redact': '#c9d1d9', 'redact_line': '#6e7681', 'empty': '#262c36',
+    'tiles': ['#e6edf3', '#1d3326', '#161f19', '#24402e', '#22272e', '#1a1f25', '#2a3a2f'],
+    'first_text': '#0d1117', 'first_pct': '#226b42',
+}
+# Class -> (metrics key, font family, weight)
+FACES = {
+    'g4': ('SpaceGrotesk-400', 'SG', 400), 'g5': ('SpaceGrotesk-500', 'SG', 500),
+    'g7': ('SpaceGrotesk-700', 'SG', 700), 'm': ('SpaceMono-400', 'SM', 400),
+}
+FALLBACK = {'SG': "'Space Grotesk', Arial, Helvetica, sans-serif", 'SM': "'Space Mono', ui-monospace, Menlo, Consolas, monospace"}
 
 
 def esc(value):
     return html.escape(str(value), quote=True)
 
 
-def text(x, y, value, size=18, color=INK, mono=False):
-    family = 'monospace' if mono else 'Arial, Helvetica, sans-serif'
-    return f'<text x="{x:.2f}" y="{y:.2f}" fill="{color}" font-family="{family}" font-size="{size}">{esc(value)}</text>'
+def measure(value, size, face='g4'):
+    widths = METRICS[FACES[face][0]]
+    return sum(widths.get(ch, 0.6) for ch in str(value)) * size
 
 
-def rect(x, y, w, h, color):
-    return f'<rect x="{x:.2f}" y="{y:.2f}" width="{max(0,w):.2f}" height="{max(0,h):.2f}" fill="{color}"/>'
+def wrap(value, size, face, width):
+    lines, line = [], ''
+    for word in str(value).split():
+        trial = f'{line} {word}'.strip()
+        if line and measure(trial, size, face) > width:
+            lines.append(line)
+            line = word
+        else:
+            line = trial
+    return lines + ([line] if line else [])
 
 
-def svg(title, body, height, width=904):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{esc(title)}" '
-            f'viewBox="0 0 {width} {height}"><title>{esc(title)}</title>'
-            + rect(0, 0, width, height, '#ffffff') + body + '</svg>\n')
+def fit(value, size, face, width):
+    """Shorten one line with an ellipsis so it never overflows its box."""
+    value = str(value)
+    while value and measure(value, size, face) > width:
+        value = value[:-2].rstrip() + '…'
+        if value == '…':
+            break
+    return value
+
+
+class Canvas:
+    """Collects SVG parts and the font faces they use, so only those get embedded."""
+
+    def __init__(self, theme):
+        self.theme, self.parts, self.faces = theme, [], set()
+
+    def text(self, x, y, value, size=18, color='ink', face='g4', anchor='start'):
+        self.faces.add(face)
+        fill = self.theme.get(color, color)
+        end = ' text-anchor="end"' if anchor == 'end' else ''
+        self.parts.append(f'<text x="{x:.2f}" y="{y:.2f}" class="{face}" font-size="{size}" fill="{fill}"{end}>{esc(value)}</text>')
+
+    def rect(self, x, y, w, h, color):
+        fill = self.theme.get(color, color)
+        self.parts.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{max(0, w):.2f}" height="{max(0, h):.2f}" fill="{fill}"/>')
+
+    def rule(self, y=0):
+        self.rect(PAD, y, CW, 1, 'rule')
+
+    def label(self, y, value):
+        self.text(PAD, y, value, 13, 'muted', 'm')
+
+    def heading(self, y, value):
+        self.text(PAD, y, value, 30, 'ink', 'g7')
+
+    def svg(self, title, height):
+        css = ''
+        families = set()
+        for face in sorted(self.faces):
+            key, family, weight = FACES[face]
+            data = base64.b64encode((FONTS / f'{key}.woff2').read_bytes()).decode('ascii')
+            css += f"@font-face{{font-family:{family};font-weight:{weight};src:url(data:font/woff2;base64,{data}) format('woff2')}}"
+            css += f'.{face}{{font-family:{family},{FALLBACK[family]};font-weight:{weight}}}'
+            families.add(family)
+        return (f'<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{esc(title)}" '
+                f'viewBox="0 0 {W} {height:.0f}" width="{W}" height="{height:.0f}"><title>{esc(title)}</title>'
+                f'<style>{css}</style>'
+                f'<rect width="{W}" height="{height:.0f}" fill="{self.theme["bg"]}"/>' + ''.join(self.parts) + '</svg>\n')
 
 
 def treemap(items, x=0, y=0, width=904, height=904 / 1.618):
@@ -39,31 +120,67 @@ def treemap(items, x=0, y=0, width=904, height=904 / 1.618):
     return treemap(items[:split], x, y, width, height * ratio) + treemap(items[split:], x, y + height * ratio, width, height * (1-ratio))
 
 
-def language_svg(languages):
+def header_svg(config, theme):
+    c = Canvas(theme)
+    c.text(PAD, 48, 'M / N', 13, 'green', 'm')
+    c.text(W - PAD, 48, f'github.com/{config["username"]}', 13, 'muted', 'm', 'end')
+    c.text(PAD, 104, 'A little about me', 13, 'muted', 'm')
+    c.text(PAD, 188, fit(config['name'], 76, 'g7', CW), 76, 'ink', 'g7')
+    c.text(PAD, 240, fit(config['tagline'], 28, 'g7', CW), 28, 'ink', 'g7')
+    c.text(PAD, 276, fit(config['intro'], 20, 'g4', CW), 20, 'muted', 'g4')
+    return c.svg(config['name'], 316)
+
+
+def about_svg(config, theme):
+    c = Canvas(theme)
+    c.rule()
+    c.label(48, '01 / About me')
+    y = 92
+    for line in wrap(config['about'], 22, 'g4', CW):
+        c.text(PAD, y, line, 22, 'ink', 'g4')
+        y += 32
+    y += 6
+    for line in wrap(config['note'], 16, 'g4', CW):
+        c.text(PAD, y, line, 16, 'muted', 'g4')
+        y += 24
+    return c.svg(f'About me. {config["about"]} {config["note"]}', y + 16)
+
+
+def language_svg(languages, theme=LIGHT):
+    c = Canvas(theme)
+    c.rule()
+    c.label(48, '02 / Languages')
+    c.heading(94, 'What I build with')
+    c.text(PAD, 124, 'Block area reflects source lines', 13, 'faint', 'm')
+    top = 146
     items = sorted(((k, v) for k, v in languages.items() if v > 0), key=lambda p: (-p[1], p[0]))
     if not items:
-        return svg('Languages: no source lines counted yet', text(30, 60, 'No source lines counted yet.', 24, MUTED), 110)
+        c.text(PAD, top + 30, 'No source lines counted yet.', 20, 'muted')
+        return c.svg('Languages: no source lines counted yet', top + 60)
     total = sum(v for _, v in items)
     # Fold tiny blocks into a readable remainder; the equal-size table contains every language.
-    shown = [p for p in items[:6] if p[1] / total >= .05]
-    if not shown:
-        shown = items[:1]
+    shown = [p for p in items[:6] if p[1] / total >= .05] or items[:1]
     remainder = total - sum(v for _, v in shown)
     if remainder:
         shown.append(('Other languages', remainder))
-    colors = [INK, '#dceade', '#eff4ef', '#c8dbcc', '#e5e5df', '#f1f1ee', '#d3dfd5']
-    body = ''
-    for i, ((name, count), x, y, w, h) in enumerate(treemap(shown)):
-        body += rect(x+3, y+3, w-6, h-6, colors[i % len(colors)])
-        color = '#ffffff' if i == 0 else INK
-        if w < 100 or h < 95:
-            body += f'<g><title>{esc(name)}: {count:,} lines</title>' + text(x+8, y+h/2, '…', 14, color) + '</g>'
+    height = CW / 1.618
+    for i, ((name, count), x, y, w, h) in enumerate(treemap(shown, PAD, top, CW, height)):
+        x, y, w, h = x + 3, y + 3, w - 6, h - 6
+        c.rect(x, y, w, h, theme['tiles'][i % len(theme['tiles'])])
+        color = theme['first_text'] if i == 0 else 'ink'
+        if w < 110 or h < 108:
+            c.text(x + 10, y + 26, fit(name, 13, 'm', w - 16), 13, color, 'm')
             continue
-        size = min(38, max(12, (w-30) / max(len(name)*.61, 1)), max(12, h/5))
-        body += text(x+16, y+30+size/2, name, round(size), color)
-        body += text(x+16, y+h-44, f'{count/total:.1%}', 20, '#a9d7b5' if i == 0 else GREEN)
-        body += text(x+16, y+h-20, f'{count:,} lines', 11, color, True)
-    return svg('Languages sized by source lines; exact values in the expandable table', body, 904/1.618)
+        # Keep the name clear of the percentage and line count at the bottom of the tile.
+        size = min(40, h / 5, h - 96, (w - 36) / max(measure(name, 1, 'g5'), .1))
+        if size < 16:
+            size = 16
+            c.text(x + 18, y + 30, fit(name, size, 'g5', w - 32), size, color, 'g5')
+        else:
+            c.text(x + 18, y + 22 + size, fit(name, round(size), 'g5', w - 32), round(size), color, 'g5')
+        c.text(x + 18, y + h - 42, f'{count/total:.1%}', 22, theme['first_pct'] if i == 0 else 'green', 'g5')
+        c.text(x + 18, y + h - 18, f'{count:,} lines', 13, color, 'm')
+    return c.svg('Languages sized by source lines; exact values in the expandable table', top + height + 24)
 
 
 def safe_projects(repositories):
@@ -77,65 +194,100 @@ def safe_projects(repositories):
     return result
 
 
-def project_svg(project, index):
-    body = rect(0, 0, 904, 160, '#f7f8f5') + rect(0, 0, 3, 160, GREEN)
-    body += text(24, 30, f'{index:02} / ' + ('PRIVATE' if project['private'] else 'PUBLIC'), 11, GREEN, True)
+def projects_heading_svg(theme):
+    c = Canvas(theme)
+    c.rule()
+    c.label(48, '03 / Recent work')
+    c.heading(94, 'Latest work. Partial clearance.')
+    c.text(PAD, 126, 'The three most recently pushed projects.', 16, 'muted')
+    return c.svg('Latest work. Partial clearance. The three most recently pushed projects.', 142)
+
+
+def project_svg(project, index, theme=LIGHT):
+    c = Canvas(theme)
+    c.rect(PAD, 6, CW, 156, 'card')
+    c.rect(PAD, 6, 3, 156, 'green')
+    x = PAD + 26
+    c.text(x, 38, f'{index:02} / ' + ('PRIVATE' if project['private'] else 'PUBLIC'), 13, 'green', 'm')
     if project['private']:
         # Geometric redaction. No hidden text, filters or recoverable name.
-        body += rect(24, 47, 240, 25, INK)
-        for offset in range(0, 240, 12):
-            body += rect(24+offset, 49, 2, 21, '#535b54')
-        body += text(24, 104, 'Details withheld. Work in progress.', 15, MUTED)
-        body += text(24, 137, '[ ACCESS RESTRICTED ]', 12, GREEN, True)
+        c.rect(x, 54, 260, 26, 'redact')
+        for offset in range(0, 260, 13):
+            c.rect(x + offset, 56, 2, 22, 'redact_line')
+        c.text(x, 112, 'Details withheld. Work in progress.', 16, 'muted')
+        c.text(x, 144, '[ ACCESS RESTRICTED ]', 13, 'green', 'm')
     else:
-        name = textwrap.shorten(project['name'], width=65, placeholder='…')
-        body += text(24, 65, name, min(24, 810/max(len(name)*.58, 1)))
-        description = textwrap.shorten(project['description'], width=105, placeholder='…')
-        body += text(24, 104, description, 14, MUTED)
-        body += text(24, 137, 'Open repository ↗', 12, GREEN, True)
-    return svg('Private project, name withheld' if project['private'] else project['name'], body, 176)
+        c.text(x, 76, fit(project['name'], 26, 'g7', CW - 60), 26, 'ink', 'g7')
+        c.text(x, 112, fit(project['description'], 16, 'g4', CW - 60), 16, 'muted')
+        c.text(x, 144, 'Open repository ↗', 13, 'green', 'm')
+    return c.svg('Private project, name withheld' if project['private'] else project['name'], 168)
+
+
+def activity_svg(days, private, theme=LIGHT):
+    c = Canvas(theme)
+    c.rule()
+    c.label(48, '04 / Activity')
+    c.heading(94, 'My coding activity')
+    middle, reach = 190, 56
+    maximum = max((d['count'] for d in days), default=0)
+    slot = CW / max(len(days), 1)
+    for i, day in enumerate(days):
+        half = max(2, day['count'] / maximum * reach) if maximum and day['count'] else 2
+        bar = min(12, slot * .45)
+        c.rect(PAD + i * slot + (slot - bar) / 2, middle - half, bar, half * 2, 'green' if day['count'] else 'empty')
+    if days:
+        c.text(PAD, middle + reach + 30, days[0]['date'], 12, 'faint', 'm')
+        c.text(W - PAD, middle + reach + 30, days[-1]['date'], 12, 'faint', 'm', 'end')
+    total = sum(d['count'] for d in days)
+    scope = 'public and private repositories' if private else 'public repositories'
+    caption = f'{total:,} commits in the past 28 days across {scope}.' if total else f'No commits in the past 28 days across {scope}.'
+    c.text(PAD, middle + reach + 62, caption, 16, 'muted')
+    return c.svg('Daily commits over the past 28 days; values in the expandable table', middle + reach + 84)
+
+
+def footer_svg(config, updated, theme):
+    c = Canvas(theme)
+    c.rule()
+    c.text(PAD, 40, 'M / N', 13, 'green', 'm')
+    c.text(W - PAD, 40, f'Last updated {updated}', 13, 'faint', 'm', 'end')
+    return c.svg(f'Last updated {updated}', 64)
+
+
+def picture(name, alt, href=None):
+    tag = (f'<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/{name}.svg">'
+           f'<img alt="{esc(alt)}" src="assets/{name}.svg"></picture>')
+    return f'<a href="{esc(href)}">{tag}</a>' if href else tag
 
 
 def render(config, data, output):
     output = Path(output)
-    assets = output / 'assets'
-    assets.mkdir(parents=True, exist_ok=True)
-    body = text(0, 22, 'M / N', 12, GREEN, True) + text(0, 100, config['name'], 64)
-    body += text(0, 150, config['tagline'], 25) + text(0, 190, config['intro'], 18, MUTED)
-    (assets/'header.svg').write_text(svg(config['name'], body, 225), encoding='utf-8')
-    (assets/'languages.svg').write_text(language_svg(data['languages']), encoding='utf-8')
-    projects = safe_projects(data['repositories'])
-    project_md = []
-    for i, project in enumerate(projects, 1):
-        (assets/f'project-{i}.svg').write_text(project_svg(project, i), encoding='utf-8')
-        if project['private']:
-            project_md.append(f'![Private project. Name withheld.](assets/project-{i}.svg)')
-        else:
-            project_md.append(f'[![Public project {i}](assets/project-{i}.svg)]({project["url"]})')
-    for i in range(len(projects)+1, 4):
-        (assets/f'project-{i}.svg').unlink(missing_ok=True)
     days = data['activity']
-    maximum = max((d['count'] for d in days), default=0)
-    wave = ''
-    for i, day in enumerate(days):
-        height = 4 + (day['count']/maximum*76 if maximum else 0)
-        wave += rect(i*32+6, 48-height/2, 18, height, GREEN if day['count'] else '#dce5dd')
-    wave += text(0, 126, 'Public commits · Past 28 days' if maximum else 'No public commits in the past 28 days.', 15, MUTED)
-    (assets/'activity.svg').write_text(svg('Daily public commits; values in the expandable table', wave, 150), encoding='utf-8')
+    private_activity = data.get('activity_private', False)
+    projects = safe_projects(data['repositories'])
+    for theme, folder in ((LIGHT, output / 'assets'), (DARK, output / 'assets' / 'dark')):
+        folder.mkdir(parents=True, exist_ok=True)
+        files = {
+            'header': header_svg(config, theme), 'about': about_svg(config, theme),
+            'languages': language_svg(data['languages'], theme), 'projects': projects_heading_svg(theme),
+            'activity': activity_svg(days, private_activity, theme), 'footer': footer_svg(config, data['updated'], theme),
+        }
+        for i, project in enumerate(projects, 1):
+            files[f'project-{i}'] = project_svg(project, i, theme)
+        for i in range(len(projects) + 1, 4):
+            (folder / f'project-{i}.svg').unlink(missing_ok=True)
+        for name, content in files.items():
+            (folder / f'{name}.svg').write_text(content, encoding='utf-8')
+
+    project_tags = [picture(f'project-{i}', 'Private project. Name withheld.' if p['private'] else f'{p["name"]}: {p["description"]}',
+                            None if p['private'] else p['url']) for i, p in enumerate(projects, 1)]
     total = sum(data['languages'].values())
-    language_rows = '\n'.join(f'| {esc(k)} | {v:,} | {v/total:.1%} |' for k,v in sorted(data['languages'].items(), key=lambda p:(-p[1],p[0])))
+    language_rows = '\n'.join(f'| {esc(k)} | {v:,} | {v/total:.1%} |' for k, v in sorted(data['languages'].items(), key=lambda p: (-p[1], p[0])))
     activity_rows = '\n'.join(f'| {d["date"]} | {d["count"]} |' for d in days)
-    readme = f'''![{esc(config['name'])}](assets/header.svg)
-
-### About me
-
-{config['about']}
-
-{config['note']}
-
-### What I build with
-
-![Languages sized by source lines](assets/languages.svg)
+    scope_note = ('Includes private repositories as daily totals only; no names or messages are published.'
+                  if private_activity else 'Public repositories only.')
+    readme = f'''{picture('header', f"{config['name']}. {config['tagline']} {config['intro']}")}
+{picture('about', f"About me. {config['about']} {config['note']}")}
+{picture('languages', 'What I build with: languages sized by source lines')}
 
 <details>
 <summary>View all languages at equal size</summary>
@@ -148,27 +300,21 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 
 </details>
 
-### Latest work. Partial clearance.
-
-The three most recently pushed projects.
-
-{chr(10).join(project_md) or 'No eligible projects yet.'}
-
-### My coding activity
-
-![Public coding activity](assets/activity.svg)
+{picture('projects', 'Latest work. Partial clearance. The three most recently pushed projects.')}
+{chr(10).join(project_tags)}
+{picture('activity', 'My coding activity: commits per day over the past 28 days')}
 
 <details>
 <summary>View the daily breakdown</summary>
 
-| Date (UTC) | Public commits |
+| Date (UTC) | Commits |
 | :--- | ---: |
 {activity_rows}
 
-Commits attributed to this GitHub account on the default branches of included public repositories.
+Commits attributed to this GitHub account on the default branches of included repositories. {scope_note}
 
 </details>
 
-<sub>Last updated: {data['updated']} · [@{config['username']}](https://github.com/{config['username']})</sub>
+{picture('footer', f"Last updated {data['updated']}")}
 '''
-    (output/'README.md').write_text(readme, encoding='utf-8')
+    (output / 'README.md').write_text(readme, encoding='utf-8')

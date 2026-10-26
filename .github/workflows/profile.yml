@@ -9,6 +9,7 @@ on:
     paths:
       - profile.json
       - scripts/**
+      - fonts/**
       - tests/**
       - .github/workflows/profile.yml
 

@@ -46,6 +46,21 @@ class ProfileTests(unittest.TestCase):
         for values in [{}, {'C++': 1}, {f'Lang {i}': i+1 for i in range(100)}, {'<script>&': 20}]:
             ET.fromstring(language_svg(values))
 
+    def test_light_and_dark_sets_match(self):
+        config = json.loads((Path(__file__).resolve().parents[1]/'profile.json').read_text())
+        days = [{'date': f'2026-10-{i:02}', 'count': i % 3} for i in range(1, 29)]
+        with tempfile.TemporaryDirectory() as folder:
+            render(config, {'languages': {'Kotlin': 5}, 'repositories': [{'private': True, 'pushed_at': '1'}],
+                            'activity': days, 'activity_private': True, 'coverage': 'Test', 'updated': 'Test'}, folder)
+            light = sorted(p.name for p in (Path(folder)/'assets').glob('*.svg'))
+            dark = sorted(p.name for p in (Path(folder)/'assets'/'dark').glob('*.svg'))
+            self.assertEqual(light, dark)
+            for file in Path(folder).rglob('*.svg'):
+                ET.fromstring(file.read_text(encoding='utf-8'))
+            readme = (Path(folder)/'README.md').read_text(encoding='utf-8')
+            for name in light:
+                self.assertIn(f'assets/dark/{name}', readme)
+
     def test_recent_order_and_private_redaction(self):
         repos = [{'private': True, 'pushed_at': f'2026-10-{i:02}'} for i in range(1, 6)]
         self.assertEqual(len(safe_projects(repos)), 3)

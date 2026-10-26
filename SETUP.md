@@ -22,7 +22,7 @@ Repositories whose downloaded archive exceeds 100 MiB or whose expanded contents
 
 The language chart excludes configuration and project metadata such as Properties, Visual Studio Solution, MSBuild, Gradle, Ant, Maven and TOML, as well as cloc's C# Generated category. `exclude_languages` contains the complete list.
 
-Owned, nonarchived, nonfork repositories are included. The profile repository itself is excluded. The three latest projects are ranked by `pushed_at`. The activity chart counts commits attributed to this GitHub account on the default branches of included public repositories over 28 UTC days; it will differ from GitHub's contribution calendar.
+Owned, nonarchived, nonfork repositories are included. The profile repository itself is excluded. The three latest projects are ranked by `pushed_at`. The activity chart counts commits attributed to this GitHub account on the default branches of included repositories over 28 UTC days. With `PROFILE_READ_TOKEN` set, private repositories are included as daily totals only; without it, public repositories only. It will differ from GitHub's contribution calendar.
 
 ## Local checks
 
@@ -30,6 +30,6 @@ Requires Python 3.12+ and cloc 2.10. Run `python -m unittest discover -s tests -
 
 Set `PROFILE_READ_TOKEN` in the environment for private access, or `GH_TOKEN` for authenticated public access, then run `python scripts/update_profile.py`. Never put tokens in files or commit them. Optionally set `CLOC` to the line counter's path, and `CLOC_PERL` to a Perl executable when using the Perl script on Windows.
 
-The renderer produces SVGs supported as GitHub README images. It uses system font fallbacks, so typography varies slightly from the Figma concept. Native details elements provide the expandable views. GitHub controls the surrounding page theme; generated images retain white backgrounds with green accents.
+The renderer draws each README section as one SVG, in a light set (`assets/`) and a dark set (`assets/dark/`). The README switches between them with `<picture>`, and each set uses GitHub's own page background, so the sections read as one page in either theme. Space Grotesk and Space Mono (SIL Open Font License, in `fonts/`) are embedded in the SVGs; `fonts/metrics.json` holds their character widths for line wrapping. Native details elements provide the expandable views.
 
 GitHub may disable scheduled workflows in public repositories after prolonged inactivity. Re-enable the workflow in Actions if necessary. Check Actions for failed runs or an expired read token if the displayed update time becomes stale.

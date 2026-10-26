@@ -126,7 +126,8 @@ def collect(config):
                 if str(error) not in {'Response too large', 'Source size limit exceeded'}:
                     raise
                 skipped = 1
-        if not repo['private'] and repo.get('size', 0):
+        # Private repositories add to the daily totals only; nothing else about them is kept.
+        if repo.get('size', 0) and (not repo['private'] or private_token):
             query = urllib.parse.urlencode({'author': config['username'], 'since': dates[0]+'T00:00:00Z', 'until': today.isoformat()+'T23:59:59Z'})
             for commit in pages(path + '/commits?' + query, token):
                 day = commit['commit']['committer']['date'][:10]
@@ -147,6 +148,7 @@ def collect(config):
         coverage += f' {skipped_total} oversized repositories excluded from line counts (100 MiB archive / 500 MiB expanded limit).'
     return {'languages': dict(totals), 'repositories': repositories,
             'activity': [{'date': day, 'count': activity[day]} for day in dates],
+            'activity_private': bool(private_token),
             'updated': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
             'coverage': coverage}
 
@@ -157,12 +159,11 @@ def main():
     data = collect(config)
     with tempfile.TemporaryDirectory(prefix='profile-render-') as folder:
         render(config, data, folder)
-        (ROOT/'assets').mkdir(exist_ok=True)
-        for item in (Path(folder)/'assets').iterdir():
-            shutil.copyfile(item, ROOT/'assets'/item.name)
-        for i in range(1, 4):
-            if not (Path(folder)/'assets'/f'project-{i}.svg').exists():
-                (ROOT/'assets'/f'project-{i}.svg').unlink(missing_ok=True)
+        shutil.copytree(Path(folder)/'assets', ROOT/'assets', dirs_exist_ok=True)
+        for sub in ('', 'dark'):
+            for i in range(1, 4):
+                if not (Path(folder)/'assets'/sub/f'project-{i}.svg').exists():
+                    (ROOT/'assets'/sub/f'project-{i}.svg').unlink(missing_ok=True)
         shutil.copyfile(Path(folder)/'README.md', ROOT/'README.md')
     print('Profile refreshed successfully.')
 
