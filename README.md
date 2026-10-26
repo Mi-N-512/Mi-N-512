@@ -36,44 +36,44 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 <a href="https://github.com/Mi-N-512/Budget-Buddy"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Budget-Buddy: A heartfelt offline Android project bridging budgeting with a playful, quirky companion." src="assets/project-1.svg"></picture></a>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="Private project. Name withheld." src="assets/project-2.svg"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-3.svg"><img alt="Private project. Name withheld." src="assets/project-3.svg"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: commits, issues and pull requests per day over the past 28 days" src="assets/activity.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: contributions per day over the past 28 days" src="assets/activity.svg"></picture>
 
 <details>
 <summary>View the daily breakdown</summary>
 
-| Date (UTC) | Commits | Issues | Pull requests | Total |
-| :--- | ---: | ---: | ---: | ---: |
-| 2026-09-29 | 0 | 0 | 0 | 0 |
-| 2026-09-30 | 0 | 0 | 0 | 0 |
-| 2026-10-01 | 0 | 0 | 0 | 0 |
-| 2026-10-02 | 0 | 0 | 0 | 0 |
-| 2026-10-03 | 0 | 0 | 0 | 0 |
-| 2026-10-04 | 0 | 0 | 0 | 0 |
-| 2026-10-05 | 0 | 0 | 0 | 0 |
-| 2026-10-06 | 0 | 0 | 0 | 0 |
-| 2026-10-07 | 0 | 0 | 0 | 0 |
-| 2026-10-08 | 0 | 0 | 0 | 0 |
-| 2026-10-09 | 0 | 0 | 0 | 0 |
-| 2026-10-10 | 0 | 0 | 0 | 0 |
-| 2026-10-11 | 0 | 0 | 0 | 0 |
-| 2026-10-12 | 0 | 0 | 0 | 0 |
-| 2026-10-13 | 0 | 0 | 0 | 0 |
-| 2026-10-14 | 0 | 0 | 0 | 0 |
-| 2026-10-15 | 0 | 0 | 0 | 0 |
-| 2026-10-16 | 0 | 0 | 0 | 0 |
-| 2026-10-17 | 0 | 0 | 0 | 0 |
-| 2026-10-18 | 0 | 0 | 0 | 0 |
-| 2026-10-19 | 0 | 0 | 0 | 0 |
-| 2026-10-20 | 0 | 0 | 0 | 0 |
-| 2026-10-21 | 0 | 0 | 0 | 0 |
-| 2026-10-22 | 0 | 0 | 0 | 0 |
-| 2026-10-23 | 0 | 0 | 0 | 0 |
-| 2026-10-24 | 0 | 0 | 0 | 0 |
-| 2026-10-25 | 0 | 0 | 0 | 0 |
-| 2026-10-26 | 1 | 0 | 0 | 1 |
+| Date (UTC) | Contributions |
+| :--- | ---: |
+| 2026-09-29 | 3 |
+| 2026-09-30 | 5 |
+| 2026-10-01 | 20 |
+| 2026-10-02 | 3 |
+| 2026-10-03 | 0 |
+| 2026-10-04 | 7 |
+| 2026-10-05 | 2 |
+| 2026-10-06 | 2 |
+| 2026-10-07 | 4 |
+| 2026-10-08 | 0 |
+| 2026-10-09 | 1 |
+| 2026-10-10 | 0 |
+| 2026-10-11 | 3 |
+| 2026-10-12 | 6 |
+| 2026-10-13 | 2 |
+| 2026-10-14 | 4 |
+| 2026-10-15 | 4 |
+| 2026-10-16 | 1 |
+| 2026-10-17 | 0 |
+| 2026-10-18 | 0 |
+| 2026-10-19 | 6 |
+| 2026-10-20 | 2 |
+| 2026-10-21 | 6 |
+| 2026-10-22 | 2 |
+| 2026-10-23 | 0 |
+| 2026-10-24 | 0 |
+| 2026-10-25 | 7 |
+| 2026-10-26 | 5 |
 
-Commits attributed to this GitHub account on any branch of included repositories, counted once each, plus issues and pull requests it opened. Includes private repositories as daily totals only; no names or messages are published.
+Daily totals from GitHub's contribution calendar: commits, issues, pull requests, reviews and new repositories. Includes private contributions as daily totals only; no names or messages are published.
 
 </details>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-26 14:43 UTC" src="assets/footer.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-26 14:55 UTC" src="assets/footer.svg"></picture>
