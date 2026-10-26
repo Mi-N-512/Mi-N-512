@@ -1,14 +1,6 @@
-![Miché N](assets/header.svg)
-
-### About me
-
-I enjoy turning an idea into something I can use. I care about clear interfaces and understanding what happens behind them.
-
-This is where I share what I'm working on and what I'm learning.
-
-### What I build with
-
-![Languages sized by source lines](assets/languages.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/header.svg"><img alt="Miché N. I like figuring out how things work. I build software and learn by trying things out." src="assets/header.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/about.svg"><img alt="About me. I enjoy turning an idea into something I can use. I care about clear interfaces and understanding what happens behind them. This is where I share what I&#x27;m working on and what I&#x27;m learning." src="assets/about.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/languages.svg"><img alt="What I build with: languages sized by source lines" src="assets/languages.svg"></picture>
 
 <details>
 <summary>View all languages at equal size</summary>
@@ -40,22 +32,16 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 
 </details>
 
-### Latest work. Partial clearance.
-
-The three most recently pushed projects.
-
-![Private project. Name withheld.](assets/project-1.svg)
-![Private project. Name withheld.](assets/project-2.svg)
-![Private project. Name withheld.](assets/project-3.svg)
-
-### My coding activity
-
-![Public coding activity](assets/activity.svg)
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/projects.svg"><img alt="Latest work. Partial clearance. The three most recently pushed projects." src="assets/projects.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Private project. Name withheld." src="assets/project-1.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="Private project. Name withheld." src="assets/project-2.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-3.svg"><img alt="Private project. Name withheld." src="assets/project-3.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: commits per day over the past 28 days" src="assets/activity.svg"></picture>
 
 <details>
 <summary>View the daily breakdown</summary>
 
-| Date (UTC) | Public commits |
+| Date (UTC) | Commits |
 | :--- | ---: |
 | 2026-09-29 | 0 |
 | 2026-09-30 | 0 |
@@ -86,8 +72,8 @@ The three most recently pushed projects.
 | 2026-10-25 | 0 |
 | 2026-10-26 | 0 |
 
-Commits attributed to this GitHub account on the default branches of included public repositories.
+Commits attributed to this GitHub account on the default branches of included repositories. Includes private repositories as daily totals only; no names or messages are published.
 
 </details>
 
-<sub>Last updated: 2026-10-26 10:08 UTC · [@Mi-N-512](https://github.com/Mi-N-512)</sub>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-26 13:06 UTC" src="assets/footer.svg"></picture>
