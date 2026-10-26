@@ -240,9 +240,10 @@ def activity_svg(days, private, theme=LIGHT):
         c.text(W - PAD, middle + reach + 30, days[-1]['date'], 12, 'faint', 'm', 'end')
     total = sum(d['count'] for d in days)
     scope = 'public and private repositories' if private else 'public repositories'
-    caption = f'{total:,} commits in the past 28 days across {scope}.' if total else f'No commits in the past 28 days across {scope}.'
+    caption = (f'{total:,} contributions in the past 28 days across {scope}.' if total
+               else f'No contributions in the past 28 days across {scope}.')
     c.text(PAD, middle + reach + 62, caption, 16, 'muted')
-    return c.svg('Daily commits over the past 28 days; values in the expandable table', middle + reach + 84)
+    return c.svg('Daily commits, issues and pull requests over the past 28 days; values in the expandable table', middle + reach + 84)
 
 
 def footer_svg(config, updated, theme):
@@ -282,7 +283,7 @@ def render(config, data, output):
                             None if p['private'] else p['url']) for i, p in enumerate(projects, 1)]
     total = sum(data['languages'].values())
     language_rows = '\n'.join(f'| {esc(k)} | {v:,} | {v/total:.1%} |' for k, v in sorted(data['languages'].items(), key=lambda p: (-p[1], p[0])))
-    activity_rows = '\n'.join(f'| {d["date"]} | {d["count"]} |' for d in days)
+    activity_rows = '\n'.join(f'| {d["date"]} | {d.get("commits", d["count"])} | {d.get("issues", 0)} | {d.get("pulls", 0)} | {d["count"]} |' for d in days)
     scope_note = ('Includes private repositories as daily totals only; no names or messages are published.'
                   if private_activity else 'Public repositories only.')
     readme = f'''{picture('header', f"{config['name']}. {config['tagline']} {config['intro']}")}
@@ -302,16 +303,16 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 
 {picture('projects', 'Latest work. Partial clearance. The three most recently pushed projects.')}
 {chr(10).join(project_tags)}
-{picture('activity', 'My coding activity: commits per day over the past 28 days')}
+{picture('activity', 'My coding activity: commits, issues and pull requests per day over the past 28 days')}
 
 <details>
 <summary>View the daily breakdown</summary>
 
-| Date (UTC) | Commits |
-| :--- | ---: |
+| Date (UTC) | Commits | Issues | Pull requests | Total |
+| :--- | ---: | ---: | ---: | ---: |
 {activity_rows}
 
-Commits attributed to this GitHub account on the default branches of included repositories. {scope_note}
+Commits attributed to this GitHub account on any branch of included repositories, counted once each, plus issues and pull requests it opened. {scope_note}
 
 </details>
 

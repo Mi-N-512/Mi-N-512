@@ -111,10 +111,11 @@ def collect(config):
     totals = collections.Counter()
     today = dt.datetime.now(dt.timezone.utc).date()
     dates = [(today-dt.timedelta(days=i)).isoformat() for i in reversed(range(28))]
-    activity = collections.Counter({day: 0 for day in dates})
+    activity = {kind: collections.Counter() for kind in ('commits', 'issues', 'pulls')}
+    dates_set = set(dates)
     def inspect(repo):
         lines = {}
-        commits = collections.Counter()
+        commits, issues, pulls = collections.Counter(), collections.Counter(), collections.Counter()
         skipped = 0
         # Identifiers remain in memory only. No source code from a repository is executed.
         path = '/repos/' + '/'.join(urllib.parse.quote(s, safe='') for s in (config['username'], repo['name']))
@@ -128,17 +129,35 @@ def collect(config):
                 skipped = 1
         # Private repositories add to the daily totals only; nothing else about them is kept.
         if repo.get('size', 0) and (not repo['private'] or private_token):
+            # Every branch, deduplicated by commit so merged work is counted once.
             query = urllib.parse.urlencode({'author': config['username'], 'since': dates[0]+'T00:00:00Z', 'until': today.isoformat()+'T23:59:59Z'})
-            for commit in pages(path + '/commits?' + query, token):
-                day = commit['commit']['committer']['date'][:10]
-                if day in activity:
+            seen = {}
+            for branch in pages(path + '/branches', token):
+                ref = urllib.parse.urlencode({'sha': branch['name']})
+                for commit in pages(path + f'/commits?{query}&{ref}', token):
+                    seen[commit['sha']] = commit['commit']['committer']['date'][:10]
+            for day in seen.values():
+                if day in dates_set:
                     commits[day] += 1
-        return lines, commits, skipped
+        if not repo['private'] or private_token:
+            # Issues and pull requests opened by this account. The issues endpoint returns both.
+            query = urllib.parse.urlencode({'creator': config['username'], 'state': 'all', 'since': dates[0]+'T00:00:00Z'})
+            try:
+                for item in pages(path + '/issues?' + query, token):
+                    day = item['created_at'][:10]
+                    if day in dates_set:
+                        (pulls if 'pull_request' in item else issues)[day] += 1
+            except urllib.error.HTTPError as error:
+                # 410: issues turned off. 403/404: the read token lacks issue or pull request access.
+                if error.code not in (403, 404, 410):
+                    raise
+        return lines, (commits, issues, pulls), skipped
     skipped_total = 0
     with ThreadPoolExecutor(max_workers=4) as pool:
-        for index, (lines, commits, skipped) in enumerate(pool.map(inspect, repositories), 1):
+        for index, (lines, counts, skipped) in enumerate(pool.map(inspect, repositories), 1):
             totals.update(lines)
-            activity.update(commits)
+            for kind, counter in zip(('commits', 'issues', 'pulls'), counts):
+                activity[kind].update(counter)
             skipped_total += skipped
             if index % 25 == 0:
                 print(f'Processed {index} repositories.', flush=True)
@@ -147,7 +166,9 @@ def collect(config):
     if skipped_total:
         coverage += f' {skipped_total} oversized repositories excluded from line counts (100 MiB archive / 500 MiB expanded limit).'
     return {'languages': dict(totals), 'repositories': repositories,
-            'activity': [{'date': day, 'count': activity[day]} for day in dates],
+            'activity': [{'date': day, 'commits': activity['commits'][day], 'issues': activity['issues'][day],
+                          'pulls': activity['pulls'][day],
+                          'count': sum(activity[kind][day] for kind in activity)} for day in dates],
             'activity_private': bool(private_token),
             'updated': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
             'coverage': coverage}

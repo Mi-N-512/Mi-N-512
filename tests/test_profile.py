@@ -61,6 +61,43 @@ class ProfileTests(unittest.TestCase):
             for name in light:
                 self.assertIn(f'assets/dark/{name}', readme)
 
+    def test_activity_counts_branches_issues_and_pulls(self):
+        import datetime as dt
+        import update_profile
+        today = dt.datetime.now(dt.timezone.utc).date().isoformat()
+        repo = {'name': 'r', 'owner': {'login': 'Mi-N-512'}, 'fork': False, 'archived': False,
+                'private': True, 'pushed_at': today, 'size': 1, 'default_branch': 'main'}
+        stamp = {'commit': {'committer': {'date': today + 'T10:00:00Z'}}}
+        def fake_pages(path, token):
+            if path.endswith('/repos?affiliation=owner&visibility=all'):
+                return [repo]
+            if path.endswith('/branches'):
+                return [{'name': 'main'}, {'name': 'feature'}]
+            if '/commits?' in path:
+                # The same commit appears on both branches and must count once.
+                extra = [{'sha': 'b', **stamp}] if 'sha=feature' in path else []
+                return [{'sha': 'a', **stamp}] + extra
+            if '/issues?' in path:
+                return [{'created_at': today + 'T09:00:00Z'}, {'created_at': today + 'T09:00:00Z', 'pull_request': {}}]
+            raise AssertionError(path)
+        def fake_request(path, token, binary=False):
+            raise ValueError('Response too large')
+        config = json.loads((Path(__file__).resolve().parents[1]/'profile.json').read_text())
+        old = update_profile.pages, update_profile.request, os.environ.get('PROFILE_READ_TOKEN')
+        update_profile.pages, update_profile.request = fake_pages, fake_request
+        os.environ['PROFILE_READ_TOKEN'] = 'test'
+        try:
+            data = update_profile.collect(config)
+        finally:
+            update_profile.pages, update_profile.request = old[0], old[1]
+            if old[2] is None:
+                os.environ.pop('PROFILE_READ_TOKEN')
+            else:
+                os.environ['PROFILE_READ_TOKEN'] = old[2]
+        last = data['activity'][-1]
+        self.assertEqual((last['commits'], last['issues'], last['pulls'], last['count']), (2, 1, 1, 4))
+        self.assertTrue(data['activity_private'])
+
     def test_recent_order_and_private_redaction(self):
         repos = [{'private': True, 'pushed_at': f'2026-10-{i:02}'} for i in range(1, 6)]
         self.assertEqual(len(safe_projects(repos)), 3)

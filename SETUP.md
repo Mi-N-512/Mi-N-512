@@ -22,7 +22,7 @@ Repositories whose downloaded archive exceeds 100 MiB or whose expanded contents
 
 The language chart excludes configuration and project metadata such as Properties, Visual Studio Solution, MSBuild, Gradle, Ant, Maven and TOML, as well as cloc's C# Generated category. `exclude_languages` contains the complete list.
 
-Owned, nonarchived, nonfork repositories are included. The profile repository itself is excluded. The three latest projects are ranked by `pushed_at`. The activity chart counts commits attributed to this GitHub account on the default branches of included repositories over 28 UTC days. With `PROFILE_READ_TOKEN` set, private repositories are included as daily totals only; without it, public repositories only. It will differ from GitHub's contribution calendar.
+Owned, nonarchived, nonfork repositories are included. The profile repository itself is excluded. The three latest projects are ranked by `pushed_at`. The activity chart counts, over 28 UTC days, commits attributed to this GitHub account on every branch of included repositories (each commit once), plus issues and pull requests the account opened. Commits made with an email that is not linked to the account are not attributed to it. Counting private issues and pull requests needs Issues and Pull requests read access on the token; without it they are skipped. With `PROFILE_READ_TOKEN` set, private repositories are included as daily totals only; without it, public repositories only. It will differ from GitHub's contribution calendar.
 
 ## Local checks
 
