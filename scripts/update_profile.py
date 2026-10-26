@@ -177,5 +177,5 @@ if __name__ == '__main__':
         safe_errors = {'Response too large', 'Source size limit exceeded', 'Unsafe source path', 'Unsafe source entry', 'Unsafe source destination', 'Pagination limit reached', 'Expected paginated list'}
         if str(error) in safe_errors:
             code += ': ' + str(error)
-        print(f'Profile refresh failed ({code}); existing published assets were retained. Check token access, API limits and cloc availability.', file=sys.stderr)
+        print(f'::error::Profile refresh failed ({code}); existing published assets were retained. Check token access, API limits and cloc availability.', file=sys.stderr)
         sys.exit(1)
