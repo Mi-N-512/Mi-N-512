@@ -20,13 +20,18 @@ from render import render
 ROOT = Path(__file__).resolve().parents[1]
 MAX_ARCHIVE = 100 * 1024 * 1024
 MAX_SOURCE = 500 * 1024 * 1024
+# Asks for dates and counts only, so no repository identifiers can enter the response.
+CALENDAR = '''query($login: String!, $from: DateTime!, $to: DateTime!) {
+  user(login: $login) { contributionsCollection(from: $from, to: $to) { restrictedContributionsCount
+    contributionCalendar { weeks { contributionDays { date contributionCount } } } } } }'''
 
 
-def request(path, token, binary=False):
+def request(path, token, binary=False, body=None):
     headers = {'Accept': 'application/vnd.github+json', 'User-Agent': 'profile-readme', 'X-GitHub-Api-Version': '2022-11-28'}
     if token:
         headers['Authorization'] = 'Bearer ' + token
-    req = urllib.request.Request('https://api.github.com' + path, headers=headers)
+    data = json.dumps(body).encode('utf-8') if body else None
+    req = urllib.request.Request('https://api.github.com' + path, headers=headers, data=data)
     with urllib.request.urlopen(req, timeout=90) as response:
         raw = response.read(MAX_ARCHIVE + 1)
     if len(raw) > MAX_ARCHIVE:
@@ -102,6 +107,18 @@ def count_lines(raw, config):
         return {k: v['code'] for k, v in counts.items() if k not in ('header', 'SUM') and v['code'] > 0}
 
 
+def contributions(config, dates, token):
+    """Daily totals from the contribution calendar, matching the green squares on the profile."""
+    variables = {'login': config['username'], 'from': dates[0] + 'T00:00:00Z', 'to': dates[-1] + 'T23:59:59Z'}
+    result = request('/graphql', token, body={'query': CALENDAR, 'variables': variables})
+    if result.get('errors') or not (result.get('data') or {}).get('user'):
+        raise ValueError('Contribution calendar unavailable')
+    collection = result['data']['user']['contributionsCollection']
+    counts = {day['date']: int(day['contributionCount'])
+              for week in collection['contributionCalendar']['weeks'] for day in week['contributionDays']}
+    return [{'date': day, 'count': counts.get(day, 0)} for day in dates], collection['restrictedContributionsCount'] > 0
+
+
 def collect(config):
     private_token = os.environ.get('PROFILE_READ_TOKEN', '')
     token = private_token or os.environ.get('GH_TOKEN', '')
@@ -111,12 +128,9 @@ def collect(config):
     totals = collections.Counter()
     today = dt.datetime.now(dt.timezone.utc).date()
     dates = [(today-dt.timedelta(days=i)).isoformat() for i in reversed(range(28))]
-    activity = {kind: collections.Counter() for kind in ('commits', 'issues', 'pulls')}
-    dates_set = set(dates)
-    stats = collections.Counter()  # Aggregate counts only; printed as a run notice for troubleshooting.
+    activity, restricted = contributions(config, dates, token)
     def inspect(repo):
         lines = {}
-        commits, issues, pulls = collections.Counter(), collections.Counter(), collections.Counter()
         skipped = 0
         # Identifiers remain in memory only. No source code from a repository is executed.
         path = '/repos/' + '/'.join(urllib.parse.quote(s, safe='') for s in (config['username'], repo['name']))
@@ -128,58 +142,21 @@ def collect(config):
                 if str(error) not in {'Response too large', 'Source size limit exceeded'}:
                     raise
                 skipped = 1
-        # Private repositories add to the daily totals only; nothing else about them is kept.
-        if repo.get('size', 0) and (not repo['private'] or private_token):
-            # Every branch, deduplicated by commit so merged work is counted once.
-            query = urllib.parse.urlencode({'author': config['username'], 'since': dates[0]+'T00:00:00Z', 'until': today.isoformat()+'T23:59:59Z'})
-            seen = {}
-            stats['repositories scanned for commits'] += 1
-            branches = pages(path + '/branches', token)
-            stats['branches checked'] += len(branches)
-            for branch in branches:
-                ref = urllib.parse.urlencode({'sha': branch['name']})
-                for commit in pages(path + f'/commits?{query}&{ref}', token):
-                    seen[commit['sha']] = commit['commit']['committer']['date'][:10]
-            for day in seen.values():
-                if day in dates_set:
-                    commits[day] += 1
-        if not repo['private'] or private_token:
-            # Issues and pull requests opened by this account. The issues endpoint returns both.
-            query = urllib.parse.urlencode({'creator': config['username'], 'state': 'all', 'since': dates[0]+'T00:00:00Z'})
-            try:
-                for item in pages(path + '/issues?' + query, token):
-                    day = item['created_at'][:10]
-                    if day in dates_set:
-                        (pulls if 'pull_request' in item else issues)[day] += 1
-            except urllib.error.HTTPError as error:
-                # 410: issues turned off. 403/404: the read token lacks issue or pull request access.
-                if error.code not in (403, 404, 410):
-                    raise
-                stats['issue lists not readable'] += 1
-        return lines, (commits, issues, pulls), skipped
+        return lines, skipped
     skipped_total = 0
     with ThreadPoolExecutor(max_workers=4) as pool:
-        for index, (lines, counts, skipped) in enumerate(pool.map(inspect, repositories), 1):
+        for index, (lines, skipped) in enumerate(pool.map(inspect, repositories), 1):
             totals.update(lines)
-            for kind, counter in zip(('commits', 'issues', 'pulls'), counts):
-                activity[kind].update(counter)
             skipped_total += skipped
             if index % 25 == 0:
                 print(f'Processed {index} repositories.', flush=True)
-    stats['repositories'] = len(repositories)
-    stats['private repositories'] = sum(1 for r in repositories if r['private'])
-    stats['repositories reported as empty'] = sum(1 for r in repositories if not r.get('size', 0))
-    stats['commits found'] = sum(activity['commits'].values())
-    print('::notice::Activity check: ' + ', '.join(f'{k} {v}' for k, v in sorted(stats.items())), flush=True)
     private_scope = bool(private_token and config['include_private_languages'])
     coverage = 'Includes accessible private repositories in aggregate.' if private_scope else 'Public repositories only.'
     if skipped_total:
         coverage += f' {skipped_total} oversized repositories excluded from line counts (100 MiB archive / 500 MiB expanded limit).'
     return {'languages': dict(totals), 'repositories': repositories,
-            'activity': [{'date': day, 'commits': activity['commits'][day], 'issues': activity['issues'][day],
-                          'pulls': activity['pulls'][day],
-                          'count': sum(activity[kind][day] for kind in activity)} for day in dates],
-            'activity_private': bool(private_token),
+            # Private work reaches the calendar for the token's owner, or as anonymous counts when the profile shows it.
+            'activity': activity, 'activity_private': bool(private_token) or restricted,
             'updated': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
             'coverage': coverage}
 
@@ -205,7 +182,7 @@ if __name__ == '__main__':
     except Exception as error:
         # Avoid URLs, credentials, private repository names and source paths in public Actions logs.
         code = f'HTTP {error.code}' if isinstance(error, urllib.error.HTTPError) else type(error).__name__
-        safe_errors = {'Response too large', 'Source size limit exceeded', 'Unsafe source path', 'Unsafe source entry', 'Unsafe source destination', 'Pagination limit reached', 'Expected paginated list'}
+        safe_errors = {'Response too large', 'Source size limit exceeded', 'Unsafe source path', 'Unsafe source entry', 'Unsafe source destination', 'Pagination limit reached', 'Expected paginated list', 'Contribution calendar unavailable'}
         if str(error) in safe_errors:
             code += ': ' + str(error)
         print(f'::error::Profile refresh failed ({code}); existing published assets were retained. Check token access, API limits and cloc availability.', file=sys.stderr)

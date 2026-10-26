@@ -61,26 +61,24 @@ class ProfileTests(unittest.TestCase):
             for name in light:
                 self.assertIn(f'assets/dark/{name}', readme)
 
-    def test_activity_counts_branches_issues_and_pulls(self):
+    def test_activity_uses_calendar_totals_only(self):
         import datetime as dt
         import update_profile
+        secret = 'SECRET-REPO-NAME-123'
         today = dt.datetime.now(dt.timezone.utc).date().isoformat()
-        repo = {'name': 'r', 'owner': {'login': 'Mi-N-512'}, 'fork': False, 'archived': False,
+        repo = {'name': secret, 'owner': {'login': 'Mi-N-512'}, 'fork': False, 'archived': False,
                 'private': True, 'pushed_at': today, 'size': 1, 'default_branch': 'main'}
-        stamp = {'commit': {'committer': {'date': today + 'T10:00:00Z'}}}
+        self.assertNotIn('repository', update_profile.CALENDAR)
         def fake_pages(path, token):
             if path.endswith('/repos?affiliation=owner&visibility=all'):
                 return [repo]
-            if path.endswith('/branches'):
-                return [{'name': 'main'}, {'name': 'feature'}]
-            if '/commits?' in path:
-                # The same commit appears on both branches and must count once.
-                extra = [{'sha': 'b', **stamp}] if 'sha=feature' in path else []
-                return [{'sha': 'a', **stamp}] + extra
-            if '/issues?' in path:
-                return [{'created_at': today + 'T09:00:00Z'}, {'created_at': today + 'T09:00:00Z', 'pull_request': {}}]
             raise AssertionError(path)
-        def fake_request(path, token, binary=False):
+        def fake_request(path, token, binary=False, body=None):
+            if path == '/graphql':
+                # Unexpected extra fields must never reach the published data.
+                days = [{'date': today, 'contributionCount': 4, 'repository': secret}]
+                return {'data': {'user': {'contributionsCollection': {
+                    'restrictedContributionsCount': 4, 'contributionCalendar': {'weeks': [{'contributionDays': days}]}}}}}
             raise ValueError('Response too large')
         config = json.loads((Path(__file__).resolve().parents[1]/'profile.json').read_text())
         old = update_profile.pages, update_profile.request, os.environ.get('PROFILE_READ_TOKEN')
@@ -94,9 +92,15 @@ class ProfileTests(unittest.TestCase):
                 os.environ.pop('PROFILE_READ_TOKEN')
             else:
                 os.environ['PROFILE_READ_TOKEN'] = old[2]
-        last = data['activity'][-1]
-        self.assertEqual((last['commits'], last['issues'], last['pulls'], last['count']), (2, 1, 1, 4))
+        self.assertEqual(len(data['activity']), 28)
+        self.assertEqual(data['activity'][-1], {'date': today, 'count': 4})
+        self.assertTrue(all(set(day) == {'date', 'count'} for day in data['activity']))
         self.assertTrue(data['activity_private'])
+        with tempfile.TemporaryDirectory() as folder:
+            render(config, {**data, 'repositories': []}, folder)
+            for file in Path(folder).rglob('*'):
+                if file.is_file():
+                    self.assertNotIn(secret, file.read_text(encoding='utf-8'))
 
     def test_recent_order_and_private_redaction(self):
         repos = [{'private': True, 'pushed_at': f'2026-10-{i:02}'} for i in range(1, 6)]
