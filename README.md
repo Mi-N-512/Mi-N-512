@@ -36,44 +36,44 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Private project. Name withheld." src="assets/project-1.svg"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="Private project. Name withheld." src="assets/project-2.svg"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-3.svg"><img alt="Private project. Name withheld." src="assets/project-3.svg"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: commits per day over the past 28 days" src="assets/activity.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: commits, issues and pull requests per day over the past 28 days" src="assets/activity.svg"></picture>
 
 <details>
 <summary>View the daily breakdown</summary>
 
-| Date (UTC) | Commits |
-| :--- | ---: |
-| 2026-09-29 | 0 |
-| 2026-09-30 | 0 |
-| 2026-10-01 | 0 |
-| 2026-10-02 | 0 |
-| 2026-10-03 | 0 |
-| 2026-10-04 | 0 |
-| 2026-10-05 | 0 |
-| 2026-10-06 | 0 |
-| 2026-10-07 | 0 |
-| 2026-10-08 | 0 |
-| 2026-10-09 | 0 |
-| 2026-10-10 | 0 |
-| 2026-10-11 | 0 |
-| 2026-10-12 | 0 |
-| 2026-10-13 | 0 |
-| 2026-10-14 | 0 |
-| 2026-10-15 | 0 |
-| 2026-10-16 | 0 |
-| 2026-10-17 | 0 |
-| 2026-10-18 | 0 |
-| 2026-10-19 | 0 |
-| 2026-10-20 | 0 |
-| 2026-10-21 | 0 |
-| 2026-10-22 | 0 |
-| 2026-10-23 | 0 |
-| 2026-10-24 | 0 |
-| 2026-10-25 | 0 |
-| 2026-10-26 | 0 |
+| Date (UTC) | Commits | Issues | Pull requests | Total |
+| :--- | ---: | ---: | ---: | ---: |
+| 2026-09-29 | 0 | 0 | 0 | 0 |
+| 2026-09-30 | 0 | 0 | 0 | 0 |
+| 2026-10-01 | 0 | 0 | 0 | 0 |
+| 2026-10-02 | 0 | 0 | 0 | 0 |
+| 2026-10-03 | 0 | 0 | 0 | 0 |
+| 2026-10-04 | 0 | 0 | 0 | 0 |
+| 2026-10-05 | 0 | 0 | 0 | 0 |
+| 2026-10-06 | 0 | 0 | 0 | 0 |
+| 2026-10-07 | 0 | 0 | 0 | 0 |
+| 2026-10-08 | 0 | 0 | 0 | 0 |
+| 2026-10-09 | 0 | 0 | 0 | 0 |
+| 2026-10-10 | 0 | 0 | 0 | 0 |
+| 2026-10-11 | 0 | 0 | 0 | 0 |
+| 2026-10-12 | 0 | 0 | 0 | 0 |
+| 2026-10-13 | 0 | 0 | 0 | 0 |
+| 2026-10-14 | 0 | 0 | 0 | 0 |
+| 2026-10-15 | 0 | 0 | 0 | 0 |
+| 2026-10-16 | 0 | 0 | 0 | 0 |
+| 2026-10-17 | 0 | 0 | 0 | 0 |
+| 2026-10-18 | 0 | 0 | 0 | 0 |
+| 2026-10-19 | 0 | 0 | 0 | 0 |
+| 2026-10-20 | 0 | 0 | 0 | 0 |
+| 2026-10-21 | 0 | 0 | 0 | 0 |
+| 2026-10-22 | 0 | 0 | 0 | 0 |
+| 2026-10-23 | 0 | 0 | 0 | 0 |
+| 2026-10-24 | 0 | 0 | 0 | 0 |
+| 2026-10-25 | 0 | 0 | 0 | 0 |
+| 2026-10-26 | 0 | 0 | 0 | 0 |
 
-Commits attributed to this GitHub account on the default branches of included repositories. Includes private repositories as daily totals only; no names or messages are published.
+Commits attributed to this GitHub account on any branch of included repositories, counted once each, plus issues and pull requests it opened. Includes private repositories as daily totals only; no names or messages are published.
 
 </details>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-26 13:06 UTC" src="assets/footer.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-26 13:17 UTC" src="assets/footer.svg"></picture>
