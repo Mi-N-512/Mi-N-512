@@ -113,6 +113,7 @@ def collect(config):
     dates = [(today-dt.timedelta(days=i)).isoformat() for i in reversed(range(28))]
     activity = {kind: collections.Counter() for kind in ('commits', 'issues', 'pulls')}
     dates_set = set(dates)
+    stats = collections.Counter()  # Aggregate counts only; printed as a run notice for troubleshooting.
     def inspect(repo):
         lines = {}
         commits, issues, pulls = collections.Counter(), collections.Counter(), collections.Counter()
@@ -132,7 +133,10 @@ def collect(config):
             # Every branch, deduplicated by commit so merged work is counted once.
             query = urllib.parse.urlencode({'author': config['username'], 'since': dates[0]+'T00:00:00Z', 'until': today.isoformat()+'T23:59:59Z'})
             seen = {}
-            for branch in pages(path + '/branches', token):
+            stats['repositories scanned for commits'] += 1
+            branches = pages(path + '/branches', token)
+            stats['branches checked'] += len(branches)
+            for branch in branches:
                 ref = urllib.parse.urlencode({'sha': branch['name']})
                 for commit in pages(path + f'/commits?{query}&{ref}', token):
                     seen[commit['sha']] = commit['commit']['committer']['date'][:10]
@@ -151,6 +155,7 @@ def collect(config):
                 # 410: issues turned off. 403/404: the read token lacks issue or pull request access.
                 if error.code not in (403, 404, 410):
                     raise
+                stats['issue lists not readable'] += 1
         return lines, (commits, issues, pulls), skipped
     skipped_total = 0
     with ThreadPoolExecutor(max_workers=4) as pool:
@@ -161,6 +166,11 @@ def collect(config):
             skipped_total += skipped
             if index % 25 == 0:
                 print(f'Processed {index} repositories.', flush=True)
+    stats['repositories'] = len(repositories)
+    stats['private repositories'] = sum(1 for r in repositories if r['private'])
+    stats['repositories reported as empty'] = sum(1 for r in repositories if not r.get('size', 0))
+    stats['commits found'] = sum(activity['commits'].values())
+    print('::notice::Activity check: ' + ', '.join(f'{k} {v}' for k, v in sorted(stats.items())), flush=True)
     private_scope = bool(private_token and config['include_private_languages'])
     coverage = 'Includes accessible private repositories in aggregate.' if private_scope else 'Public repositories only.'
     if skipped_total:
