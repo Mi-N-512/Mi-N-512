@@ -33,7 +33,7 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 </details>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/projects.svg"><img alt="Latest work. Partial clearance. The three most recently pushed projects." src="assets/projects.svg"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Private project. Name withheld." src="assets/project-1.svg"></picture>
+<a href="https://github.com/Mi-N-512/Budget-Buddy"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Budget-Buddy: A heartfelt offline Android project bridging budgeting with a playful, quirky companion." src="assets/project-1.svg"></picture></a>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="Private project. Name withheld." src="assets/project-2.svg"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-3.svg"><img alt="Private project. Name withheld." src="assets/project-3.svg"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: commits, issues and pull requests per day over the past 28 days" src="assets/activity.svg"></picture>
@@ -70,10 +70,10 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 | 2026-10-23 | 0 | 0 | 0 | 0 |
 | 2026-10-24 | 0 | 0 | 0 | 0 |
 | 2026-10-25 | 0 | 0 | 0 | 0 |
-| 2026-10-26 | 0 | 0 | 0 | 0 |
+| 2026-10-26 | 1 | 0 | 0 | 1 |
 
 Commits attributed to this GitHub account on any branch of included repositories, counted once each, plus issues and pull requests it opened. Includes private repositories as daily totals only; no names or messages are published.
 
 </details>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-26 14:33 UTC" src="assets/footer.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-26 14:43 UTC" src="assets/footer.svg"></picture>
