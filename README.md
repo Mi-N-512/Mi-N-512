@@ -33,8 +33,8 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 </details>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/projects.svg"><img alt="Latest work. Partial clearance. The three most recently pushed projects." src="assets/projects.svg"></picture>
-<a href="https://github.com/Mi-N-512/Budget-Buddy"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Budget-Buddy: A heartfelt offline Android project bridging budgeting with a playful, quirky companion." src="assets/project-1.svg"></picture></a>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="Private project. Name withheld." src="assets/project-2.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Private project. Name withheld." src="assets/project-1.svg"></picture>
+<a href="https://github.com/Mi-N-512/Budget-Buddy"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="Budget-Buddy: A heartfelt offline Android project bridging budgeting with a playful, quirky companion." src="assets/project-2.svg"></picture></a>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-3.svg"><img alt="Private project. Name withheld." src="assets/project-3.svg"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: contributions per day over the past 28 days" src="assets/activity.svg"></picture>
 
@@ -43,7 +43,6 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 
 | Date (UTC) | Contributions |
 | :--- | ---: |
-| 2026-10-01 | 20 |
 | 2026-10-02 | 3 |
 | 2026-10-03 | 0 |
 | 2026-10-04 | 7 |
@@ -70,10 +69,11 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 | 2026-10-25 | 7 |
 | 2026-10-26 | 5 |
 | 2026-10-27 | 0 |
-| 2026-10-28 | 0 |
+| 2026-10-28 | 3 |
+| 2026-10-29 | 0 |
 
 Daily totals from GitHub's contribution calendar: commits, issues, pull requests, reviews and new repositories. Includes private contributions as daily totals only; no names or messages are published.
 
 </details>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-28 10:36 UTC" src="assets/footer.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-29 10:55 UTC" src="assets/footer.svg"></picture>
