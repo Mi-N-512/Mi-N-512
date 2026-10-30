@@ -7,15 +7,15 @@
 
 | Language | Source lines | Share |
 | :--- | ---: | ---: |
-| C# | 19,191 | 30.7% |
-| Kotlin | 15,138 | 24.2% |
-| Java | 12,984 | 20.8% |
-| JavaScript | 5,715 | 9.2% |
-| Razor | 5,067 | 8.1% |
+| C# | 19,191 | 30.4% |
+| Kotlin | 15,744 | 25.0% |
+| Java | 12,984 | 20.6% |
+| JavaScript | 5,715 | 9.1% |
+| Razor | 5,067 | 8.0% |
 | Bourne Shell | 1,491 | 2.4% |
-| CSS | 1,093 | 1.8% |
+| CSS | 1,093 | 1.7% |
 | DOS Batch | 797 | 1.3% |
-| TeX | 220 | 0.4% |
+| TeX | 220 | 0.3% |
 | XAML | 204 | 0.3% |
 | Ruby | 115 | 0.2% |
 | Fortran 77 | 96 | 0.2% |
@@ -26,7 +26,7 @@
 | SQL | 28 | 0.0% |
 | Racket | 16 | 0.0% |
 | JSX | 14 | 0.0% |
-| PowerShell | 10 | 0.0% |
+| PowerShell | 13 | 0.0% |
 
 Source lines exclude blank lines and comments. Counts describe repository contents, not individual authorship. Generated and dependency directories are excluded. Includes accessible private repositories in aggregate. 1 oversized repositories excluded from line counts (100 MiB archive / 500 MiB expanded limit).
 
@@ -43,7 +43,6 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 
 | Date (UTC) | Contributions |
 | :--- | ---: |
-| 2026-10-02 | 3 |
 | 2026-10-03 | 0 |
 | 2026-10-04 | 7 |
 | 2026-10-05 | 2 |
@@ -70,10 +69,11 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 | 2026-10-26 | 5 |
 | 2026-10-27 | 0 |
 | 2026-10-28 | 3 |
-| 2026-10-29 | 0 |
+| 2026-10-29 | 9 |
+| 2026-10-30 | 0 |
 
 Daily totals from GitHub's contribution calendar: commits, issues, pull requests, reviews and new repositories. Includes private contributions as daily totals only; no names or messages are published.
 
 </details>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-29 10:55 UTC" src="assets/footer.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-30 10:53 UTC" src="assets/footer.svg"></picture>
