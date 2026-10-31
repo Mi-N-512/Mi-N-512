@@ -8,7 +8,7 @@
 | Language | Source lines | Share |
 | :--- | ---: | ---: |
 | C# | 19,191 | 30.4% |
-| Kotlin | 15,744 | 25.0% |
+| Kotlin | 15,829 | 25.1% |
 | Java | 12,984 | 20.6% |
 | JavaScript | 5,715 | 9.1% |
 | Razor | 5,067 | 8.0% |
@@ -33,7 +33,7 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 </details>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/projects.svg"><img alt="Latest work. Partial clearance. The three most recently pushed projects." src="assets/projects.svg"></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Private project. Name withheld." src="assets/project-1.svg"></picture>
+<a href="https://github.com/Mi-N-512/snapplication-launcher"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="snapplication-launcher: Android home screen that keeps the book or video you were last using one tap away. Read, Watch and Universal modes, e-paper friendly, free and open source." src="assets/project-1.svg"></picture></a>
 <a href="https://github.com/Mi-N-512/Budget-Buddy"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="Budget-Buddy: A heartfelt offline Android project bridging budgeting with a playful, quirky companion." src="assets/project-2.svg"></picture></a>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-3.svg"><img alt="Private project. Name withheld." src="assets/project-3.svg"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: contributions per day over the past 28 days" src="assets/activity.svg"></picture>
@@ -43,37 +43,37 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 
 | Date (UTC) | Contributions |
 | :--- | ---: |
-| 2026-10-03 | 0 |
-| 2026-10-04 | 7 |
-| 2026-10-05 | 2 |
-| 2026-10-06 | 2 |
-| 2026-10-07 | 4 |
+| 2026-10-04 | 14 |
+| 2026-10-05 | 4 |
+| 2026-10-06 | 4 |
+| 2026-10-07 | 8 |
 | 2026-10-08 | 0 |
-| 2026-10-09 | 1 |
+| 2026-10-09 | 2 |
 | 2026-10-10 | 0 |
-| 2026-10-11 | 3 |
-| 2026-10-12 | 6 |
-| 2026-10-13 | 2 |
-| 2026-10-14 | 4 |
-| 2026-10-15 | 4 |
+| 2026-10-11 | 6 |
+| 2026-10-12 | 12 |
+| 2026-10-13 | 4 |
+| 2026-10-14 | 8 |
+| 2026-10-15 | 8 |
 | 2026-10-16 | 1 |
 | 2026-10-17 | 0 |
 | 2026-10-18 | 0 |
 | 2026-10-19 | 6 |
-| 2026-10-20 | 2 |
-| 2026-10-21 | 6 |
-| 2026-10-22 | 2 |
+| 2026-10-20 | 4 |
+| 2026-10-21 | 12 |
+| 2026-10-22 | 4 |
 | 2026-10-23 | 0 |
 | 2026-10-24 | 0 |
-| 2026-10-25 | 7 |
+| 2026-10-25 | 8 |
 | 2026-10-26 | 5 |
 | 2026-10-27 | 0 |
-| 2026-10-28 | 3 |
-| 2026-10-29 | 9 |
-| 2026-10-30 | 0 |
+| 2026-10-28 | 6 |
+| 2026-10-29 | 27 |
+| 2026-10-30 | 30 |
+| 2026-10-31 | 0 |
 
 Daily totals from GitHub's contribution calendar: commits, issues, pull requests, reviews and new repositories. Includes private contributions as daily totals only; no names or messages are published.
 
 </details>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-30 10:53 UTC" src="assets/footer.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-10-31 10:24 UTC" src="assets/footer.svg"></picture>
