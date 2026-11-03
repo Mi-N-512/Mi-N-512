@@ -7,12 +7,12 @@
 
 | Language | Source lines | Share |
 | :--- | ---: | ---: |
-| C# | 19,191 | 30.4% |
-| Kotlin | 15,829 | 25.1% |
-| Java | 12,984 | 20.6% |
-| JavaScript | 5,715 | 9.1% |
+| C# | 19,191 | 30.2% |
+| Kotlin | 16,180 | 25.5% |
+| Java | 12,984 | 20.5% |
+| JavaScript | 5,715 | 9.0% |
 | Razor | 5,067 | 8.0% |
-| Bourne Shell | 1,491 | 2.4% |
+| Bourne Shell | 1,491 | 2.3% |
 | CSS | 1,093 | 1.7% |
 | DOS Batch | 797 | 1.3% |
 | TeX | 220 | 0.3% |
@@ -33,8 +33,8 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 </details>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/projects.svg"><img alt="Latest work. Partial clearance. The three most recently pushed projects." src="assets/projects.svg"></picture>
-<a href="https://github.com/Mi-N-512/snapplication-launcher"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="snapplication-launcher: Android home screen that keeps the book or video you were last using one tap away. Read, Watch and Universal modes, e-paper friendly, free and open source." src="assets/project-1.svg"></picture></a>
-<a href="https://github.com/Mi-N-512/Budget-Buddy"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="Budget-Buddy: A heartfelt offline Android project bridging budgeting with a playful, quirky companion." src="assets/project-2.svg"></picture></a>
+<a href="https://github.com/Mi-N-512/Budget-Buddy"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-1.svg"><img alt="Budget-Buddy: Offline Android budgeting app with Budster the Budgeter. Budgets, charts, themes and on-device receipt OCR; no account, no internet, no ads." src="assets/project-1.svg"></picture></a>
+<a href="https://github.com/Mi-N-512/snapplication-launcher"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-2.svg"><img alt="snapplication-launcher: Android home screen that keeps the book or video you were last using one tap away. Read, Watch and Universal modes, e-paper friendly, free and open source." src="assets/project-2.svg"></picture></a>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/project-3.svg"><img alt="Private project. Name withheld." src="assets/project-3.svg"></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/activity.svg"><img alt="My coding activity: contributions per day over the past 28 days" src="assets/activity.svg"></picture>
 
@@ -43,7 +43,6 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 
 | Date (UTC) | Contributions |
 | :--- | ---: |
-| 2026-10-06 | 4 |
 | 2026-10-07 | 8 |
 | 2026-10-08 | 0 |
 | 2026-10-09 | 2 |
@@ -70,10 +69,11 @@ Source lines exclude blank lines and comments. Counts describe repository conten
 | 2026-10-30 | 30 |
 | 2026-10-31 | 0 |
 | 2026-11-01 | 0 |
-| 2026-11-02 | 0 |
+| 2026-11-02 | 11 |
+| 2026-11-03 | 0 |
 
 Daily totals from GitHub's contribution calendar: commits, issues, pull requests, reviews and new repositories. Includes private contributions as daily totals only; no names or messages are published.
 
 </details>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-11-02 12:25 UTC" src="assets/footer.svg"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"><img alt="Last updated 2026-11-03 11:56 UTC" src="assets/footer.svg"></picture>
